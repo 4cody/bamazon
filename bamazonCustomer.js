@@ -58,11 +58,23 @@ function ask() {
             var item = res[i].product_name;
             var quant = res[i].stock_quantity;
             if(answer.Quantity < quant) {
-              console.log("okay we have enough")
+              var mod = quant - answer.Quantity;
+              console.log("processing your order...") 
+              connection.query("UPDATE products SET ? WHERE ?",
+              [{
+                stock_quantity: mod
+              },
+              {
+                item_id: answer.Id
+              }]);
+              var cost = res[i].price * answer.Quantity;
+              console.log('Thank you, your total is ' + cost);
             }else {
               console.log("we don't have enough to fill that order")
+              list();
             }
           };
       });
     });
 };
+
