@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
   database: "bamazon_db"
 });
 
-
+// prompt questions
 var questions = [{
   name: "Id",
   type: "input",
@@ -40,9 +40,9 @@ function list() {
       console.log("Product Name: " + res[i].product_name);
       console.log("Item ID: " + res[i].item_id);
       console.log("Price: $" + res[i].price);
-      console.log("<><><><><><><><><>") 
-    }
-    // call the ask function
+      console.log("<><><><><><><><><>");
+    };
+    // call the promts function
     ask();
   });
 };
@@ -62,6 +62,7 @@ function ask() {
             if(answer.Quantity < quant) {
               var mod = quant - answer.Quantity;
               console.log("processing your order...") 
+              // updates data base stock_quantity
               connection.query("UPDATE products SET ? WHERE ?",
               [{
                 stock_quantity: mod
