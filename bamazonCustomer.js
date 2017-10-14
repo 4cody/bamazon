@@ -13,44 +13,56 @@ var connection = mysql.createConnection({
 
 
 var questions = [{
-	name: "whatId",
-	type: "input",
-	message: "What is the ID of the product you wish to purchase?"
+  name: "Id",
+  type: "input",
+  message: "What is the ID of the product you wish to purchase?"
+},
+{
+  name: "Quantity",
+  type: "input",
+  message: "How many units do you want to purchase?"
 }]
 
 // connectiong and product listing on file start
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  var query = "SELECT * FROM products";
-	connection.query(query, function(err, res) {
-	  if (err) throw err;
-	  for(var i = 0; i < res.length; i++) {
-	  	console.log("Product Name: " + res[i].product_name);
-	  	console.log("Item ID: " + res[i].item_id);
-	  	console.log("Price: $" + res[i].price);
-	  	console.log("<><><><><><><><><>") 
-	  }
-	  ask();
-	});
+  list();
 });
 
-// asks customer to choose a product by ID#
 
+// Query the database for product list and display
+function list() {
+  var query = "SELECT * FROM products";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    for(var i = 0; i < res.length; i++) {
+      console.log("Product Name: " + res[i].product_name);
+      console.log("Item ID: " + res[i].item_id);
+      console.log("Price: $" + res[i].price);
+      console.log("<><><><><><><><><>") 
+    }
+    // call the ask function
+    ask();
+  });
+};
+
+// Promts for item to purchase and quanty
 function ask() {
   inquirer
     .prompt(questions)
     .then(function(answer) {
-      connection.query("SELECT * FROM products WHERE ?", { item_id: answer.whatId }, function(err, res) {
-        for(var i = 0; i < res.length; i++)
+      connection.query("SELECT * FROM products WHERE ?", 
+        { item_id: answer.Id }, function(err, res) {
+          for(var i = 0; i < res.length; i++) {
+            var item = res[i].product_name;
+            var quant = res[i].stock_quantity;
+            if(answer.Quantity < quant) {
+              console.log("okay we have enough")
+            }else {
+              console.log("we don't have enough to fill that order")
+            }
+          };
       });
     });
 };
-
-
-function foo() {
-	var x = connection.query("SELECT * FROM products WHERE product_name = cheese");
-	console.log(x);
-}
-//"You have chose the item" + res[answer].product_name
-// / { whatId: answer.whatId }
