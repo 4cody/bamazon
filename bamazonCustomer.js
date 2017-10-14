@@ -55,8 +55,10 @@ function ask() {
       connection.query("SELECT * FROM products WHERE ?", 
         { item_id: answer.Id }, function(err, res) {
           for(var i = 0; i < res.length; i++) {
+            // store items from database
             var item = res[i].product_name;
             var quant = res[i].stock_quantity;
+            // checks if the sufficent stock 
             if(answer.Quantity < quant) {
               var mod = quant - answer.Quantity;
               console.log("processing your order...") 
@@ -67,10 +69,14 @@ function ask() {
               {
                 item_id: answer.Id
               }]);
+              // calculate total cost
               var cost = res[i].price * answer.Quantity;
+              // order complete lost total
               console.log('Thank you, your total is ' + cost);
             }else {
+              // item not sufficient stock
               console.log("we don't have enough to fill that order")
+              // recall item list to make another selection
               list();
             }
           };
